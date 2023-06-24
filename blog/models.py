@@ -4,6 +4,11 @@ from django.utils import timezone
 
 # Create your models here.
 class Article(models.Model):
+    class ArticlePublishedManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(status=Article.Status.PUBLISHED)
+            pass
+        pass
 
     class Status(models.TextChoices):
         DRAFT = 'DF', 'Draft'
@@ -17,6 +22,9 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
+
+    objects = models.Manager() #The default manager
+    publishedArticles = ArticlePublishedManager() #The custom manager
 
     class Meta:
         # To add the descending order by published_date
