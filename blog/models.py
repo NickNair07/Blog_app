@@ -16,13 +16,13 @@ class Article(models.Model):
     published_at = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=2, 
-                              choices=Status.choices,
-                              default=Status.DRAFT
-                              )
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
 
     class Meta:
+        # To add the descending order by published_date
         ordering = ['-published_at']
+
+        # To define an index with a descending order for a column
         indexes = [
             models.Index(fields=['-published_at'])
         ]
