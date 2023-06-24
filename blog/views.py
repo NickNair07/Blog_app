@@ -8,10 +8,16 @@ def list_of_articles(request):
     return render(request, 'blog/list.html', {'articles': articles})
 
 
-def article_details(request, id):
+def article_details(request, year, month, day, article):
     try:
-        article = get_object_or_404(Article, id=id, status=Article.Status.PUBLISHED)
+        article = get_object_or_404(Article, status=Article.Status.PUBLISHED, 
+                    slug=article,
+                    published__year=year,
+                    published__month=month,
+                    published__day=day
+                )
     except Article.DoesNotExist:
         raise Http404("No article found.")
     
     return render(request, 'blog/detail.html', {'article': article})
+    pass

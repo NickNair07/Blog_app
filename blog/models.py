@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.urls import reverse
 
 # Create your models here.
 class Article(models.Model):
@@ -16,11 +17,11 @@ class Article(models.Model):
 
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_articles')
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250)
+    slug = models.SlugField(max_length=250, unique_for_date='publish')
     body = models.TextField()
-    published_at = models.DateTimeField(default=timezone.now)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    published = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
 
     objects = models.Manager() #The default manager
@@ -28,16 +29,26 @@ class Article(models.Model):
 
     class Meta:
         # To add the descending order by published_date
-        ordering = ['-published_at']
+        ordering = ['-published']
 
         # To define an index with a descending order for a column
         indexes = [
-            models.Index(fields=['-published_at'])
+            models.Index(fields=['-published'])
         ]
 
     def __str__(self):
         return self.title
         pass
 
+    def get_canonical_url(self):
+        return reverse('blog:article_details', 
+                        args=[
+                                self.published.year,
+                                self.published.month,
+                                self.published.day,
+                                self.slug
+                            ]
+                        )
+        pass
     pass
     
